@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="student">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/student/RALtester2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/student/Scaffold.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
