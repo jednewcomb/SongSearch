@@ -25,6 +25,8 @@ public class SearchByLyricsWords {
     public SearchByLyricsWords(SongCollection sc) {
         Set<String> commonWords = new HashSet<>();
 
+        //A list of common words exists as a txt file in order
+        //to simplify the searching/changing of data
         StringBuilder wordsBuilder = new StringBuilder();
         try (Scanner scan = new Scanner(Paths.get("commonWords.txt"))) {
 
@@ -37,7 +39,6 @@ public class SearchByLyricsWords {
         }
 
         String words = wordsBuilder.toString();
-
 
         // add the commonWords into an array that is split by spaces 
         // therefore each word is stored as its own index and not grouped
@@ -116,16 +117,22 @@ public class SearchByLyricsWords {
         List<String> splitLyrics = null;
         Set<String> commonWords = new HashSet<>();
 
-        String words = "the of and a to in is you that it he for "
-                + "was on are as with his they at be this from I "
-                + "have or by one had not but what all were when we "
-                + "there can an your which their if do will each how "
-                + "them then she many some so these would into has "
-                + "more her two him see could no make than been its "
-                + "now my made did get our me too ";
+        StringBuilder wordsBuilder = new StringBuilder();
+        try (Scanner scan = new Scanner(Paths.get("commonWords.txt"))) {
+
+            while (scan.hasNext()) {
+                wordsBuilder.append(scan.next() + " ");
+            }
+
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+        String words = wordsBuilder.toString();
 
         // add the commonWords into an array that is split by spaces 
         // therefore each word is stored as its own index and not grouped
+        words = words.trim();
         words = words.toLowerCase();
         String[] splitWords = words.split(" ");
 

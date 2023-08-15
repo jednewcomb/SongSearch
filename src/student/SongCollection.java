@@ -9,7 +9,7 @@ import java.util.Scanner;
 import java.util.stream.Stream;
 
 /**
- * SongCollection.java Reads the specified data file and build an array of
+ * SongCollection.java Reads the specified data file and builds an array of
  * songs.
  *
  * @author Jed Newcomb
@@ -26,12 +26,6 @@ public class SongCollection {
      * must be set in the Project Properties as an argument.
      */
     public SongCollection(String fileName) {
-
-        // use a try catch block
-        // read in the song file and build the songs array
-        // there are several ways to read in the lyrics correctly.  
-        // the line feeds between lines and the blank lines between verses
-        // must be retained.
         try {
             Scanner inFile = new Scanner(new File(fileName));
             ArrayList<Song> listOfSongs = new ArrayList<>();
@@ -50,12 +44,8 @@ public class SongCollection {
                 String title = titleLine.substring(7, titleLine.length() - 1);
 
                 String lyrics = inFile.nextLine();
-                //might be bad to have a while in a while, there must be a more
-                //elegant way to do this????
                 build.append(lyrics.substring(8));
 
-                //we can thank our partner for this, it is much more efficient
-                //and doesn't create any errors.
                 while (!(lyrics = inFile.nextLine()).startsWith("\"")) {
                     build.append("\n").append(lyrics);
                 }
@@ -73,9 +63,8 @@ public class SongCollection {
             System.err.println("file " + fileName + " not found.");
             System.exit(1);
         }
-        // sort the songs array using Arrays.sort (see the Java API)
-        // this will use the compareTo() in Song to do the job.
 
+        // sort the songs array
         Arrays.sort(songs);
     }
 

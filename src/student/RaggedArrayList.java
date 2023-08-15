@@ -27,6 +27,7 @@ public class RaggedArrayList<E> implements Iterable<E> {
     private static final int MINIMUM_SIZE = 4;
 
     public int size;
+
     public Object[] l1Array;
 
     public int l1NumUsed;

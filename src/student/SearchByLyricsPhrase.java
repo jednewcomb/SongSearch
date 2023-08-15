@@ -7,15 +7,21 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-
+/**
+ *
+ *
+ * @author Jed Newcomb
+ */
 public class SearchByLyricsPhrase {
-
     // array of songs where the lyrics of that song contains every word in the phrase being search for
     private Song[] byLyricsResults;
-    private static TreeMap<Integer, TreeSet<Song>> phraseSongMap; // map of key song ranking and song sets
-    private TreeSet<Song> songMatch; // holds a song where the lyrics contains the phrase in order
+    // map of key song ranking and song sets
+    private static TreeMap<Integer, TreeSet<Song>> phraseSongMap;
+    // holds a song where the lyrics contain the phrase in order
+    private TreeSet<Song> songMatch;
     private SearchByLyricsWords sblw;
-    private ArrayList<Song> songMatchList; // holds all songs where the lyrics contains the phrase in order
+    // holds all songs where the lyrics contain the phrase in order
+    private ArrayList<Song> songMatchList;
 
     /**
      * holds the ranking of song 
@@ -23,64 +29,74 @@ public class SearchByLyricsPhrase {
     public int rank;
 
     /**
-     *
-     * @param sc
+     * Parameterized constructor for SearchByLyricsPhrase
+     * @param sc - The collection of songs
      */
     public SearchByLyricsPhrase(SongCollection sc) {
         sblw = new SearchByLyricsWords(sc);
     }
 
     /**
+     * Search method
      *
      * @param lyricsPhrase
      * @return
      */
     public Song[] search(String lyricsPhrase) {
-        phraseSongMap = new TreeMap<>(); // holds Song objects and the ranks(key) for those Songs
-        byLyricsResults = sblw.search(lyricsPhrase); // uses search method in sblw class and returns the results
-        songMatchList = new ArrayList<>(); // holds all the Song objects with lyrics that match the phrase
-        for (Song s : byLyricsResults) { // grabs a Song object from byLyricsResults ArrayList to search
-            songMatch = new TreeSet<>(); // holds a Song ob ject where the lyrics contains the phrase in order
-            songMatch.clear(); // clears current Song object from the TreeSet
-            rank = 0; // initialize the rank
-            int fromIndex = 0; // holds the index value where the next search will start from
-            int indexVal = 0; // holds the index value of the word that was found           
+        phraseSongMap = new TreeMap<>();
+        byLyricsResults = sblw.search(lyricsPhrase);
+        songMatchList = new ArrayList<>();
 
-            String lyrics = s.getLyrics().toLowerCase(); // converts lyrics from song object to lower case
-            // ArrayList that holds all the indexs where the first word in the phrase was found
+        for (Song s : byLyricsResults) {
+            songMatch = new TreeSet<>();
+            songMatch.clear();
+            rank = 0;
+
+            int fromIndex = 0;
+            int indexVal = 0;
+
+            String lyrics = s.getLyrics().toLowerCase();
+
+            // ArrayList that holds all the indexes where the first word in the phrase was found
             ArrayList<Integer> firstPhraseWord = new ArrayList<Integer>();
-            ArrayList<String> phrase = new ArrayList<String>(); // ArrayList that will hold the entire phrase
-            phrase.addAll(Arrays.asList(lyricsPhrase.split(" "))); // adds the phrase to the ArrayList
+            ArrayList<String> phrase = new ArrayList<String>();
+            phrase.addAll(Arrays.asList(lyricsPhrase.split(" ")));
+
             // findWord = single word out of lyricsPhrase to search for
-            String firstWord = phrase.get(0); // grabs the first word from the phrase ArrayList
+            String firstWord = phrase.get(0);
             for (int i = 0; i < lyrics.length(); i++) {
-                indexVal = lyrics.indexOf(firstWord, fromIndex); // find current word and return its index
-                fromIndex = indexVal + firstWord.length(); // sets the next starting index for search                
-                if (indexVal == -1) { // if indexVal == -1 search reached end of lyrics
+
+                indexVal = lyrics.indexOf(firstWord, fromIndex);
+                fromIndex = indexVal + firstWord.length();
+
+                if (indexVal == -1) {
                     break;
-                } else if (lyrics.charAt(fromIndex) == 32) { // Checks if index after firstWord is a space
-                    firstPhraseWord.add(indexVal); // Adds the index value from every firstWord found in lyrics
+                } else if (lyrics.charAt(fromIndex) == 32) {
+                    firstPhraseWord.add(indexVal);
                 }
             }
 
-            rank = rankSong(lyrics, phrase, firstPhraseWord); // calls rankSong to find smallest rank for this lyric
+            rank = rankSong(lyrics, phrase, firstPhraseWord);
             if (rank == 0) {
                 continue;
             }
-            if (phraseSongMap.containsKey(rank)) { // if rank(key) already exists add song to rank(key)
+            if (phraseSongMap.containsKey(rank)) {
                 songMatch = phraseSongMap.get(rank);
-                songMatch.add(s); // add Song object that matches phrase to SongMatch
-                songMatchList.add(s); // create a list of songMatches
-                phraseSongMap.put(rank, songMatch); // add rank(key) and Song object to TreeMap
+
+                songMatch.add(s);
+                songMatchList.add(s);
+
+                phraseSongMap.put(rank, songMatch);
             } else {
-                songMatch.add(s); // add Song object that matches phrase to SongMatch
-                songMatchList.add(s); // create a list of songMatches
-                phraseSongMap.put(rank, songMatch); // add rank(key) and Song object to TreeMap
+                songMatch.add(s);
+                songMatchList.add(s);
+
+                phraseSongMap.put(rank, songMatch);
             }
         }
 
-        Song[] results = new Song[songMatchList.size()]; // create Song[] size to hold list of matching songs
-        results = songMatchList.toArray(results); // copy contents of songMatchList ArrayList to Song[] results        
+        Song[] results = new Song[songMatchList.size()];
+        results = songMatchList.toArray(results);
 
         return results;
     }
@@ -89,34 +105,35 @@ public class SearchByLyricsPhrase {
      *
      * @param lyrics contains the lyrics from one song
      * @param phrase contains the phrase being searched for in the lyrics
-     * @param firstPhraseWord contains all the indexes where the first word in the phrase was found in the lyrics
+     * @param firstPhraseWord contains all the indexes where the first word in the phrase
+     *                        was found in the lyrics
      * @return the ranking for that lyrics
      */
     public int rankSong(String lyrics, ArrayList<String> phrase, ArrayList<Integer> firstPhraseWord) {
-        int fromIndex = 0; // holds the index value where the next search will start from
-        int indexVal = 0; // holds the index value of the word that was found
-        int firstIndex = 0; // holds the index value of the first word found in the phrase
-        int lastIndex = 0; // holds the index value of the last word fond in the phrase
+        int fromIndex = 0;
+        int indexVal = 0;
+        int firstIndex = 0;
+        int lastIndex = 0;
 
         ArrayList<Integer> songRank = new ArrayList<Integer>();
         for (int i = 0; i < firstPhraseWord.size(); i++) {
             // sets starting search index by adding index value in firstPhraseWord to length of first word in phrase
             fromIndex = firstPhraseWord.get(i) + phrase.get(0).length();
-            firstIndex = firstPhraseWord.get(i); // sets firstIndex value to be used to determine ranking
+            firstIndex = firstPhraseWord.get(i);
             // skips first word in phrase. We already found all the indexes for first word which are contained
             // in the ArrayList firstPhrasaeWord
             for (int j = 1; j < phrase.size(); j++) {
                 // findWord = next word out of lyricsPhrase to search for
                 String findWord = phrase.get(j);
                 do {
-                    indexVal = lyrics.indexOf(findWord, fromIndex); // find current word and return its index
-                    if (indexVal == -1) { // if indexVal == -1 we have reached the end of the lyrics
+                    indexVal = lyrics.indexOf(findWord, fromIndex);
+                    if (indexVal == -1) {
                         break;
                     }
                     // change starting index from current index + length of search word
                     fromIndex = indexVal + findWord.length();
 
-                    if (indexVal == -1) { // if indexVal == -1 we have reached the end of the lyrics
+                    if (indexVal == -1) {
                         break;
                     }
                     // continue while loop if index after word found does not contain a space(32), period(46), LF(10),
@@ -126,47 +143,47 @@ public class SearchByLyricsPhrase {
                         && lyrics.charAt(fromIndex) != 63);
 
                 // checks to see if beginning index for ranking has been set already
-                if (indexVal == -1) { // if indexVal == -1 you reached the end of the lyrics
-                    break; // break out of the loop
+                if (indexVal == -1) {
+                    break;
                 }
 
-                lastIndex = fromIndex; // set index value for last index
+                // set index value for last index
+                lastIndex = fromIndex;
 
-                if (indexVal == -1) { // if indexVal == -1 you reached the end of the lyrics
-                    continue; // continue with loop
-                }
-                if (j == phrase.size() - 1) { // if j == phrase.size() - 1 we have reached the end of the phrase
-                    rank = lastIndex - firstIndex; // determines this songs rank
-                    songRank.add(rank); // add ranking of song to lyricsRank ArrayList
+                if (j == phrase.size() - 1) {
+                    rank = lastIndex - firstIndex;
+                    songRank.add(rank);
                 }
             }
         }
-        if (songRank.isEmpty()) { // if songRank.isEmpty() add zero to songRank so the return does not fail
+        if (songRank.isEmpty()) {
             songRank.add(0);
         } else {
-            Collections.sort(songRank); // sort the song rankings into a natural order
+            Collections.sort(songRank);
         }
-        return songRank.get(0); // return songRank[0] which will be the lowest ranking for the song
+        return songRank.get(0);
     }
 
     /**
+     * Testing method for class.
      *
      * @param args
      */
     public static void main(String[] args) {
-        SongCollection sc = new SongCollection("allSongs.txt"); // place songs in text file into SongCollection
-        String phraseToSearch = "she loves you"; // set phrase to search for
+        SongCollection sc = new SongCollection("allSongs.txt");
+        String phraseToSearch = "she loves you";
         SearchByLyricsPhrase sblp = new SearchByLyricsPhrase(sc);
-        // calls search method with returns an arr of Songs that contain the phrase being serached for
+
+        // calls search method with returns an arr of Songs that contain the phrase being searched for
         Song[] byTitlePhraseResult = sblp.search(phraseToSearch);
         System.out.println("\nsearching for: " + phraseToSearch);
         System.out.println("Total songs is " + byTitlePhraseResult.length + ", first 10 matches:");
-        System.out.println("rank    artist      title");
 
         // for loop that prints the song rankings and the songs that have that rank
         for (Map.Entry<Integer, TreeSet<Song>> entry : phraseSongMap.entrySet()) {
             String key = entry.getKey().toString();
             TreeSet<Song> value = entry.getValue();
+
             for (Song s : value) {
                 System.out.println(key + "  " + s);
             }

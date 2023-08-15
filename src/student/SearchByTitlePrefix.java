@@ -3,10 +3,11 @@ package student;
 import java.util.Comparator;
 import java.util.stream.Stream;
 
-/*
-* Parameterized class constructor
-* @author : Jed Newcomb
-* @param sc : a SongCollection object
+/**
+ * SearchByTitlePrefix uses the data from SongCollection to build a RAL of
+ * songs ordered by title
+ *
+ * @author : Jed Newcomb
  */
 public class SearchByTitlePrefix {
     private RaggedArrayList<Song> ral;
@@ -16,8 +17,8 @@ public class SearchByTitlePrefix {
     private Song[] songs;
 
     /**
-     * SearchByTitlePrefix uses the data from SongCollection to build a RAL of
-     * songs ordered by title
+     * Parameterized class constructor, which is our ragged array list, a comparator
+     * for song comparison, and the array of songs
      *
      * @author : Jed Newcomb
      * @param sc : a SongCollection object
@@ -26,9 +27,11 @@ public class SearchByTitlePrefix {
         // songs represents a copy of all the songs in the "AllSongs" txt file
         songs = sc.getAllSongs();
         comp = new Song.CmpTitle();
+
         // precautionary measure to reset the comparison counter to ensure 
         // that we start our comparison from the correct point.
         ((CmpCnt) comp).resetCmpCnt();
+
         // ral represents the RaggedArrayList 
         // our matching songs will be stored in
         ral = new RaggedArrayList<Song>(comp);
@@ -36,8 +39,8 @@ public class SearchByTitlePrefix {
         for (int i = 0; i < songs.length; i++) {
             ral.add(songs[i]);
         }
+
         System.out.println(((CmpCnt)comp).getCmpCnt());
-        
         ral.stats();
 
     }
